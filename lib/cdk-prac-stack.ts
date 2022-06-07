@@ -36,6 +36,23 @@ export class CdkPracStack extends Stack {
       .scaleOnUtilization({ targetUtilizationPercent: 75 }); // Auto Scaling
     
     
+    new ec2.Instance(this, "myInstance", {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.T2, // instance Type 설정
+        ec2.InstanceSize.MICRO // T2.MICRO로 설정함
+      ),
+      machineImage: new ec2.AmazonLinuxImage({
+        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, //
+        edition: ec2.AmazonLinuxEdition.STANDARD,
+        virtualization: ec2.AmazonLinuxVirt.HVM,
+        storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+      }),
+
+      vpc: ec2.Vpc.fromLookup(this, "vpc", {
+        isDefault: true,
+      }),
+    });
+    
     // The code that defines your stack goes here
 
     // example resource
