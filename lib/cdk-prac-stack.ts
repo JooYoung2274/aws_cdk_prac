@@ -9,11 +9,29 @@ export class CdkPracStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    // 만료기간을 이렇게 지정할수 있음.
+    // minValue, maxValue는 배포할 때 지정할 수 있는 duration의 범위를 지정함.
+    // cdk deploy --parameters duration=11 이면 1~10범위를 넘기 때문에 에러.
+    const duration = new CfnParameter(this, "duration", {
+      type: "Number",
+      default: 6,
+      minValue: 1,
+      maxValue: 10,
+    });
+    
     // new Bucket(this, "someBucket"); 이것도 가능
-    const myBucket = new Bucket(this, "someBucket", {
+    // lifecycleRules 처럼 객체타입으로 S3에 대한 세팅(?!)을 해줄 수 있음
+//     const myBucket = new Bucket(this, "someBucket", {
+//       lifecycleRules: [
+//         {
+//           expiration: Duration.days(5),
+//         },
+//       ],
+//     });
+      const myBucket = new Bucket(this, "someBucket", {
       lifecycleRules: [
         {
-          expiration: Duration.days(5),
+          expiration: Duration.days(duration.valueAsNumber), // 숫자 직접 입력대신 변수로
         },
       ],
     });
