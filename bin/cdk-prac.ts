@@ -5,4 +5,3 @@ import { CdkPracStack } from "../lib/cdk-prac-stack";
 
 const app = new cdk.App();
 new CdkPracStack(app, "CdkPracStack", {});
-// new CdkPracStack(app, "CdkPracStack2", {});
