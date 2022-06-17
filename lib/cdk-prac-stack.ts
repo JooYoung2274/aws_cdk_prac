@@ -1,8 +1,10 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnParameter, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { CfnOutput, Duration } from "aws-cdk-lib";
+
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class CdkPracStack extends Stack {
@@ -18,17 +20,17 @@ export class CdkPracStack extends Stack {
       minValue: 1,
       maxValue: 10,
     });
-    
+
     // new Bucket(this, "someBucket"); 이것도 가능
     // lifecycleRules 처럼 객체타입으로 S3에 대한 세팅(?!)을 해줄 수 있음
-//     const myBucket = new Bucket(this, "someBucket", {
-//       lifecycleRules: [
-//         {
-//           expiration: Duration.days(5),
-//         },
-//       ],
-//     });
-      const myBucket = new Bucket(this, "someBucket", {
+    //     const myBucket = new Bucket(this, "someBucket", {
+    //       lifecycleRules: [
+    //         {
+    //           expiration: Duration.days(5),
+    //         },
+    //       ],
+    //     });
+    const myBucket = new Bucket(this, "someBucket", {
       lifecycleRules: [
         {
           expiration: Duration.days(duration.valueAsNumber), // 숫자 직접 입력대신 변수로
@@ -52,8 +54,7 @@ export class CdkPracStack extends Stack {
         maxCapacity: 10,
       })
       .scaleOnUtilization({ targetUtilizationPercent: 75 }); // Auto Scaling
-    
-    
+
     new ec2.Instance(this, "myInstance", {
       instanceType: ec2.InstanceType.of(
         ec2.InstanceClass.T2, // instance Type 설정
@@ -70,7 +71,7 @@ export class CdkPracStack extends Stack {
         isDefault: true,
       }),
     });
-    
+
     // The code that defines your stack goes here
 
     // example resource
