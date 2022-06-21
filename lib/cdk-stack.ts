@@ -13,9 +13,13 @@ import {
 import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
 
 import { join } from "path";
+import { GenericTable } from "./GenericTable";
 
 export class CdkStack extends Stack {
   private api = new RestApi(this, "SpaceApi");
+
+  //dynamodb class를 따로 만들어서 (genericTable.ts) 가져와서 생성.
+  private spaceTable = new GenericTable("SpaceTable", "spaceId", this);
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
