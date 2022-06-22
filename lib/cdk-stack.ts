@@ -16,6 +16,7 @@ import { join } from "path";
 import { GenericTable } from "./GenericTable";
 
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export class CdkStack extends Stack {
   private api = new RestApi(this, "SpaceApi");
@@ -38,6 +39,13 @@ export class CdkStack extends Stack {
       entry: join(__dirname, "..", "services", "node-lambda", "hello.ts"),
       handler: "handler",
     });
+
+    // s3에 대한 권한 부여
+    // * 와일드카드 쓰지마셈
+    const s3ListPolicy = new PolicyStatement();
+    s3ListPolicy.addActions("s3:ListAllMyBuckets");
+    s3ListPolicy.addResources("*");
+    helloLambdaNodeJs.addToRolePolicy(s3ListPolicy);
 
     const helloLambdaIntegration = new LambdaIntegration(helloLambda);
     const helloLambdaResource = this.api.root.addResource("hello");
