@@ -15,6 +15,8 @@ import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
 import { join } from "path";
 import { GenericTable } from "./GenericTable";
 
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+
 export class CdkStack extends Stack {
   private api = new RestApi(this, "SpaceApi");
 
@@ -24,10 +26,17 @@ export class CdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    // 일반 Lambda 코드
     const helloLambda = new LambdaFunction(this, "helloLambda", {
       runtime: Runtime.NODEJS_16_X,
       code: Code.fromAsset(join(__dirname, "..", "services", "hello")),
       handler: "hello.main",
+    });
+
+    // 디펜던시가 포함된 Lambda-nodejs 코드
+    const helloLambdaNodeJs = new NodejsFunction(this, "helloLambdaNodeJs", {
+      entry: join(__dirname, "..", "services", "node-lambda", "hello.ts"),
+      handler: "handler",
     });
 
     const helloLambdaIntegration = new LambdaIntegration(helloLambda);
