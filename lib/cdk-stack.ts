@@ -4,6 +4,7 @@ import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambd
 import { join } from 'path';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { GenericTable } from '../repository/GenericTable';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 export class SpaceStack extends Stack {
     // api gateway setting
@@ -22,6 +23,11 @@ export class SpaceStack extends Stack {
             runtime: Runtime.NODEJS_14_X,
             code: Code.fromAsset(join(__dirname, '..', 'services', 'hello')), // fromAsset() 말고도 docker에서 함수를 가져오는 기능이랑 다른것들도 있음.
             handler: 'hello.main',
+        });
+
+        const helloLambdaNodeJs = new NodejsFunction(this, 'helloLambdaNodeJs', {
+            entry: join(__dirname, '..', 'services', 'node-lambda', 'hello.ts'),
+            handler: 'handler',
         });
 
         // api gateway setting
