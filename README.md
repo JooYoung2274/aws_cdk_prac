@@ -1,10 +1,12 @@
-# Welcome to your CDK TypeScript project
+## CDK_Prac_TypeScript
 
-This is a blank project for CDK development with TypeScript.
+- 정확히는 cdk를 이용한 lambda 사용 연습임.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+### 2022-09-20
+- 기존 프로젝트 리셋
+- aws lambda, api gateway, dynamodb, node-lambda(dependencies) example
 
-## Useful commands
+### Useful commands
 
 * `npm run build`   compile typescript to js
 * `npm run watch`   watch for changes and compile
