@@ -6,12 +6,11 @@ import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { GenericTable } from '../repository/GenericTable';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 import * as path from 'path';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 export class SpaceStack extends Stack {
     // api gateway setting
     // private api = new RestApi(this, 'SpaceApi');
@@ -35,16 +34,16 @@ export class SpaceStack extends Stack {
         //     handler: 'hello.main',
         // });
 
-        // const helloLambdaNodeJs = new NodejsFunction(this, 'helloLambdaNodeJs', {
-        //     entry: join(__dirname, '..', 'services', 'node-lambda', 'hello.ts'),
-        //     handler: 'handler',
-        // });
+        const sqsExampleNodejs = new NodejsFunction(this, 'sqsExampleNodejs', {
+            entry: join(__dirname, '..', 'services', 'node-lambda', 'sqsExample.ts'),
+            handler: 'sqsExampleHandler',
+        });
 
-        // // s3 권한 줘야 sdk 사용 가능
-        // const s3ListPolicy = new PolicyStatement();
-        // s3ListPolicy.addActions('s3:ListAllMyBuckets');
-        // s3ListPolicy.addResources('*');
-        // helloLambdaNodeJs.addToRolePolicy(s3ListPolicy);
+        // s3 권한 줘야 sdk 사용 가능
+        const sqsListPolicy = new PolicyStatement();
+        sqsListPolicy.addActions('sqs:*');
+        sqsListPolicy.addResources('*');
+        sqsExampleNodejs.addToRolePolicy(sqsListPolicy);
 
         // api gateway setting
         // const helloLambdaIntegration = new LambdaIntegration(helloLambda);
@@ -52,12 +51,14 @@ export class SpaceStack extends Stack {
         // helloLambdaResource.addMethod('GET', helloLambdaIntegration);
 
         const bucket = new s3.Bucket(this, 'Bucket');
-        const fn = new lambda.Function(this, 'MyFunction', {
-            runtime: lambda.Runtime.NODEJS_14_X,
+        const fn = new LambdaFunction(this, 'MyFunction', {
+            runtime: Runtime.NODEJS_14_X,
             handler: 'hello.main',
-            code: lambda.Code.fromAsset(path.join(__dirname, '..', 'services', 'hello')),
+            code: Code.fromAsset(path.join(__dirname, '..', 'services', 'hello')),
         });
 
         bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn));
+
+        new sqs.Queue(this, 'Queue');
     }
 }
